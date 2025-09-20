@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Long-term Parking — Booking Prototype</title>
+  <style>
+    :root{--bg:#f6f9fc;--card:#DDF4E7;--accent:#1e73ff;--muted:#6b7280;--success:#16a34a}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+   
+     /* NAVBAR */
+    .nav{background:#fff;border-bottom:1px solid #eef2f7;position:sticky;top:0;z-index:40}
+    .nav .container{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
+    .nav-left{display:flex;align-items:center;gap:14px}
+    .logo{width:44px;height:44px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .nav-links{display:flex;gap:12px;align-items:center}
+    .nav-links a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-size:14px}
+    .nav-links a:hover{background:#f3f7ff;color:var(--accent)}
+    .nav-actions{display:flex;gap:8px;align-items:center}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(30,115,255,0.12)}
+
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:20px}
+    p.lead{color:var(--muted);margin:6px 0 18px}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+
+    /* left - booking */
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    .spaces{display:flex;gap:12px;flex-wrap:wrap}
+    .space{border:1px solid #e6eefc;padding:10px;border-radius:8px;min-width:120px;cursor:pointer}
+    .space.active{border-color:var(--accent);box-shadow:0 6px 18px rgba(30,115,255,0.08)}
+
+    label{display:block;font-size:13px;margin-top:12px;color:var(--muted)}
+    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6edf5;margin-top:6px}
+    .row{display:flex;gap:12px}
+    .row > *{flex:1}
+    .muted{color:var(--muted);font-size:13px}
+
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(30,115,255,0.12)}
+
+    /* right - summary/admin */
+    .summary{position:sticky;top:20px}
+    .summary h3{margin-top:0}
+
+    .list{margin-top:10px}
+    .list-item{display:flex;justify-content:space-between;padding:10px;border-radius:8px;border:1px solid #f1f5f9;margin-top:8px}
+
+    /*footer{margin-top:18px;color:var(--muted);font-size:13px}*/
+
+     footer.site-footer{margin-top:28px;background:#fff;border-top:1px solid #eef2f7;padding:20px 0}
+    .footer-inner{max-width:1100px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .footer-col{min-width:180px}
+    .footer-col h4{margin:0 0 8px}
+    .footer-col p,a{color:var(--muted);font-size:14px;text-decoration:none}
+
+    /* admin modal */
+    .modal-back{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center}
+    .modal{background:var(--card);padding:18px;border-radius:12px;width:520px}
+    .admin-row{display:flex;gap:10px;align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.summary{position:relative;top:0}}
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-left">
+        <div class="logo">P</div>
+        <div>
+          <strong>Long-term Parking</strong>
+          <div class="small" style="color:var(--muted);font-size:13px">Easy long-stay bookings</div>
+        </div>
+      </div>
+
+    
+
+      <div class="nav-actions">
+        <button class="btn ghost" id="dashboardBtn">Dashboard</button>
+        <a href="#contact" data-scroll>Contact</a>
+        <!-- <button class="btn" id="paymentBtn">Pay</button> -->
+      </div>
+    </div>
+  </nav>
+  <!-- navbar -->
+
+  <div class="wrap">
+     <header>
+      <!-- <div class="logo">P</div> -->
+      <div>
+        <h1> Booking Prototype</h1>
+        <!-- <p class="lead">Select space, choose length, see availability, and complete a mock checkout without creating an account.</p>
+      </div> -->
+    </header>
+
+    <div class="grid">
+      <section>
+        <div class="card">
+          <strong>1) Choose parking type</strong>
+          <div class="spaces" id="spaces">
+            <!-- spaces are populated by JS -->
+          </div>
+
+          <label>2) Select start date</label>
+          <input type="date" id="startDate" />
+
+          <div class="row">
+            <div>
+              <label>Length</label>
+              <select id="lengthType">
+                <option value="days">Days</option>
+                <option value="weeks">Weeks</option>
+                <option value="months">Months</option>
+              </select>
+            </div>
+            <div>
+              <label>Qty</label>
+              <input type="number" id="lengthQty" min="1" value="1" />
+            </div>
+          </div>
+
+          <label>3) Vehicle / Guest info</label>
+          <input type="text" id="name" placeholder="Full name" />
+          <div class="row">
+            <input type="text" id="vehicle" placeholder="Vehicle reg / ID" />
+            <input type="tel" id="phone" placeholder="Phone (for confirmation)" />
+          </div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+            <input type="checkbox" id="saveAccount" /> <label for="saveAccount" class="small">Save as account (optional)</label>
+          </div>
+
+          <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+            <button class="btn" id="checkAvail">Check availability</button>
+            <button class="btn ghost" id="openAdmin">Admin</button>
+          </div>
+
+          <div id="availResult" class="muted" style="margin-top:12px"></div>
+
+          <hr style="margin:18px 0" />
+
+          <strong>Mock Payment</strong>
+          <p class="small">This demo uses a simulated payment flow. Replace with Stripe/PayPal for production.</p>
+          <label>Card number</label>
+          <input type="text" id="card" placeholder="4242 4242 4242 4242" />
+          <div class="row" style="margin-top:8px">
+            <input type="text" id="exp" placeholder="MM/YY" />
+            <input type="text" id="cvc" placeholder="CVC" />
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <button class="btn" id="payBtn">Pay & Reserve</button>
+            <div id="payStatus" class="muted"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <strong>Your Reservations (local)</strong>
+          <div id="reservations" class="list"></div>
+        </div>
+      </section>
+
+      <aside class="summary">
+        <div class="card">
+          <h3>Summary</h3>
+          <div class="muted">Selected</div>
+          <div id="summarySelected" style="margin-top:8px">— none —</div>
+
+          <div style="margin-top:12px">
+            <div class="muted">Price estimate</div>
+            <div id="summaryPrice" style="font-weight:700;margin-top:6px">—</div>
+          </div>
+
+          <hr style="margin:14px 0" />
+
+          <div class="muted">Admin actions</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn ghost" id="exportCsv">Export CSV</button>
+            <button class="btn ghost" id="clearAll">Clear all</button>
+          </div>
+
+          <footer>
+            <p class="small">Prototype: data stored locally in your browser.</p>
+             <!-- <p class="small">Prototype: data stored locally in your browser. To integrate with WordPress or Shopify, connect these endpoints to your backend (REST/GraphQL) and swap the mock payment with a real gateway.</p> -->
+          </footer>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- site footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Long-term Parking</h4>
+        <p>Secure long-stay parking for cars & RVs. Fast online booking and flexible rates.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <p><a href="#dashboard" data-scroll>Dashboard</a></p>
+        <p><a href="#contact" data-scroll>Contact</a></p>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Email: info@parking.example</p>
+        <p>Phone: +1 555 123 4567</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- admin modal (hidden) -->
+  <div id="adminModal" style="display:none">
+    <div class="modal-back">
+      <div class="modal">
+        <h3>Admin Dashboard</h3>
+        <div class="small">(demo admin — password: <code>admin</code>)</div>
+        <div style="margin-top:12px">
+          <label>Enter password</label>
+          <input id="adminPwd" type="password" />
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn" id="adminLogin">Login</button>
+          <button class="btn ghost" id="closeAdmin">Close</button>
+        </div>
+        <div id="adminArea" style="margin-top:14px;display:none">
+          <h4>Bookings</h4>
+          <div id="adminList" style="max-height:220px;overflow:auto"></div>
+          <h4 style="margin-top:12px">Inventory</h4>
+          <div class="admin-row"><div style="flex:1">Base prices (per day)</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+            <input id="priceCar" placeholder="Car price/day" />
+            <input id="priceRV" placeholder="RV price/day" />
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn" id="savePrices">Save</button>
+            <button class="btn ghost" id="refundBtn">Refund (delete) selected</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple in-memory "inventory" and bookings stored in localStorage for demo
+    const inventory = [
+      {id:'C1',type:'Car',label:'Car Space A',pricePerDay:10},
+      {id:'C2',type:'Car',label:'Car Space B',pricePerDay:10},
+      {id:'RV1',type:'RV',label:'RV Bay 1',pricePerDay:25}
+    ];
+
+    // load prices from localStorage if set
+    function loadPrices(){
+      const p = JSON.parse(localStorage.getItem('prices')||'null');
+      if(p){ inventory.forEach(i=>{ i.pricePerDay = p[i.type] ?? i.pricePerDay }); }
+    }
+    loadPrices();
+
+    const spacesEl = document.getElementById('spaces');
+    const startDate = document.getElementById('startDate');
+    const lengthType = document.getElementById('lengthType');
+    const lengthQty = document.getElementById('lengthQty');
+    const availResult = document.getElementById('availResult');
+    const summarySelected = document.getElementById('summarySelected');
+    const summaryPrice = document.getElementById('summaryPrice');
+    const reservationsEl = document.getElementById('reservations');
+
+    let selectedSpaceId = null;
+
+    function renderSpaces(){
+      spacesEl.innerHTML = '';
+      inventory.forEach(sp=>{
+        const div = document.createElement('div');
+        div.className='space'+(selectedSpaceId===sp.id? ' active':'');
+        div.innerHTML = `<strong>${sp.label}</strong><div class="muted">${sp.type} — $${sp.pricePerDay}/day</div>`;
+        div.onclick = ()=>{ selectedSpaceId = sp.id; updateSummary(); renderSpaces(); };
+        spacesEl.appendChild(div);
+      });
+    }
+    renderSpaces();
+
+    function getBookings(){
+      return JSON.parse(localStorage.getItem('bookings')||'[]');
+    }
+    function saveBookings(b){ localStorage.setItem('bookings', JSON.stringify(b)); }
+
+    function parseDate(s){ return new Date(s + 'T00:00:00'); }
+
+    function computeDays(start, type, qty){
+      const startD = parseDate(start);
+      let days = 0;
+      if(type==='days') days = qty;
+      if(type==='weeks') days = qty * 7;
+      if(type==='months') days = qty * 30; // approx
+      const end = new Date(startD);
+      end.setDate(end.getDate() + days);
+      return {days, end};
+    }
+
+    function isOverlap(aStart,aEnd,bStart,bEnd){
+      return (aStart < bEnd) && (bStart < aEnd);
+    }
+
+    function checkAvailability(spaceId, start, type, qty){
+      if(!spaceId || !start) return {ok:false,message:'Select space and start date.'};
+      const {days,end} = computeDays(start,type,qty);
+      if(days<=0) return {ok:false,message:'Invalid length.'};
+      const bookings = getBookings().filter(b=>b.spaceId===spaceId);
+      const s = parseDate(start);
+      for(const b of bookings){
+        const bS = parseDate(b.start);
+        const bE = parseDate(b.end);
+        if(isOverlap(s,end,bS,bE)) return {ok:false,message:'Space already booked for that period.'};
+      }
+      return {ok:true,days,end};
+    }
+
+    document.getElementById('checkAvail').onclick = ()=>{
+      const r = checkAvailability(selectedSpaceId, startDate.value, lengthType.value, Number(lengthQty.value));
+      if(!r.ok){ availResult.textContent = r.message; availResult.style.color='crimson'; summaryPrice.textContent='—'; }
+      else{ availResult.textContent = `Available for ${r.days} day(s). End date: ${r.end.toISOString().slice(0,10)}.`; availResult.style.color='var(--success)';
+        const sp = inventory.find(i=>i.id===selectedSpaceId);
+        const est = (sp.pricePerDay * r.days).toFixed(2);
+        summaryPrice.textContent = `$${est} (${r.days} day(s) × $${sp.pricePerDay}/day)`;
+      }
+    }
+
+    function updateSummary(){
+      const sp = inventory.find(i=>i.id===selectedSpaceId);
+      summarySelected.textContent = sp ? `${sp.label} (${sp.type})` : '— none —';
+    }
+
+    // payment & reservation (mock)
+    document.getElementById('payBtn').onclick = ()=>{
+      const name = document.getElementById('name').value.trim();
+      const vehicle = document.getElementById('vehicle').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      if(!name || !vehicle || !phone){ alert('Please enter name, vehicle and phone.'); return; }
+      const r = checkAvailability(selectedSpaceId, startDate.value, lengthType.value, Number(lengthQty.value));
+      if(!r.ok){ alert(r.message); return; }
+
+      // mock payment validation
+      const card = document.getElementById('card').value.trim();
+      if(card.length < 12){ alert('Enter mock card number (12+ digits).'); return; }
+
+      // success -> save booking
+      const bookings = getBookings();
+      const sp = inventory.find(i=>i.id===selectedSpaceId);
+      const amount = sp.pricePerDay * r.days;
+      const booking = {
+        id: 'B' + Date.now(), spaceId: sp.id, spaceLabel: sp.label, start: startDate.value, end: r.end.toISOString().slice(0,10), days: r.days,
+        name,vehicle,phone,amount,created: new Date().toISOString()
+      };
+      bookings.push(booking); saveBookings(bookings);
+
+      // optionally save account
+      if(document.getElementById('saveAccount').checked){
+        const acct = {name,vehicle,phone};
+        localStorage.setItem('account', JSON.stringify(acct));
+      }
+
+      document.getElementById('payStatus').textContent = 'Payment successful — booking saved.';
+      setTimeout(()=>document.getElementById('payStatus').textContent='','3000');
+      renderReservations();
+      availResult.textContent = '';
+      updateSummary();
+    }
+
+    function renderReservations(){
+      const bookings = getBookings();
+      reservationsEl.innerHTML = '';
+      bookings.slice().reverse().forEach(b=>{
+        const div = document.createElement('div'); div.className='list-item';
+        div.innerHTML = `<div><strong>${b.spaceLabel}</strong><div class="small">${b.start} → ${b.end} • ${b.name} • ${b.vehicle}</div></div><div style="text-align:right"><div>$${b.amount.toFixed(2)}</div><div style="margin-top:8px"><button class="btn ghost" data-id="${b.id}">Cancel</button></div></div>`;
+        reservationsEl.appendChild(div);
+      });
+      // attach cancel
+      reservationsEl.querySelectorAll('button').forEach(btn=>btn.onclick = (e)=>{
+        const id = btn.getAttribute('data-id');
+        if(confirm('Cancel this booking?')){
+          const b = getBookings().filter(x=>x.id!==id); saveBookings(b); renderReservations();
+        }
+      });
+    }
+    renderReservations();
+
+    // admin modal
+    const adminModal = document.getElementById('adminModal');
+    document.getElementById('openAdmin').onclick = ()=>{ adminModal.style.display='block'; }
+    document.getElementById('closeAdmin').onclick = ()=>{ adminModal.style.display='none'; }
+
+    document.getElementById('adminLogin').onclick = ()=>{
+      const pwd = document.getElementById('adminPwd').value;
+      if(pwd==='admin'){
+        document.getElementById('adminArea').style.display='block';
+        document.getElementById('adminPwd').style.display='none';
+        document.getElementById('adminLogin').style.display='none';
+        renderAdmin();
+      } else alert('Wrong password (demo: admin)');
+    }
+
+    function renderAdmin(){
+      const list = document.getElementById('adminList'); list.innerHTML='';
+      getBookings().forEach(b=>{
+        const el = document.createElement('div'); el.style.padding='8px'; el.style.borderBottom='1px solid #f1f5f9';
+        el.innerHTML = `<div style="display:flex;justify-content:space-between"><div><strong>${b.spaceLabel}</strong><div class="small">${b.start}→${b.end} • ${b.name} • ${b.vehicle}</div></div><div>$${b.amount.toFixed(2)}</div></div>`;
+        el.onclick = ()=>{ if(confirm('Delete this booking?')){ const arr = getBookings().filter(x=>x.id!==b.id); saveBookings(arr); renderAdmin(); renderReservations(); } };
+        list.appendChild(el);
+      });
+      // prices
+      document.getElementById('priceCar').value = inventory.find(i=>i.type==='Car').pricePerDay;
+      document.getElementById('priceRV').value = inventory.find(i=>i.type==='RV').pricePerDay;
+    }
+
+    document.getElementById('savePrices').onclick = ()=>{
+      const car = Number(document.getElementById('priceCar').value) || 0;
+      const rv = Number(document.getElementById('priceRV').value) || 0;
+      localStorage.setItem('prices', JSON.stringify({Car:car,RV:rv}));
+      loadPrices(); renderSpaces(); alert('Prices saved (localStorage).');
+    }
+
+    document.getElementById('exportCsv').onclick = ()=>{
+      const bookings = getBookings();
+      if(bookings.length===0){ alert('No bookings'); return; }
+      const hdr = ['id,spaceLabel,start,end,days,name,vehicle,phone,amount,created'];
+      const rows = bookings.map(b=>`${b.id},"${b.spaceLabel}",${b.start},${b.end},${b.days},"${b.name}","${b.vehicle}","${b.phone}",${b.amount},${b.created}`);
+      const csv = hdr.concat(rows).join('\n');
+      const blob = new Blob([csv],{type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='bookings.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('clearAll').onclick = ()=>{ if(confirm('Clear all local bookings?')){ localStorage.removeItem('bookings'); renderReservations(); } };
+
+    // clear admin area when modal closed
+    document.getElementById('closeAdmin').addEventListener('click', ()=>{ document.getElementById('adminPwd').style.display=''; document.getElementById('adminLogin').style.display=''; document.getElementById('adminArea').style.display='none'; document.getElementById('adminPwd').value=''; adminModal.style.display='none'; });
+
+    // preload saved account
+    (function(){ const acct = JSON.parse(localStorage.getItem('account')||'null'); if(acct){ document.getElementById('name').value=acct.name; document.getElementById('vehicle').value=acct.vehicle; document.getElementById('phone').value=acct.phone; document.getElementById('saveAccount').checked=true; }})();
+
+  </script>
+</body>
+</html>
